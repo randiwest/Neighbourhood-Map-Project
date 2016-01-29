@@ -4,22 +4,40 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Neighbourhood Map Project</title>
-<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css" rel="stylesheet" media="screen">
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="css/main.css" rel="stylesheet" media="screen">
+
 </head>
 <body class="container">
 	<header class="row">
-		Neighbourhood Map Project
 	</header>
-	<div id="map-container" class="row">
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
-		<div id="search-bar" class="col-md-12">
+	<div id="content" class="row">
+
+		<!-- Search and Location List ,  -->
+		<div id="search-bar" class="col-md-12 form-group search-bar">
+			<form role="search">
+					<input type="search" class="form-control" placeholder="Search here..." data-bind="textInpur: query, valueUpdate: 'keyup'">
+			</form>
 		</div>
-		<div id="key-locations" class="col-md-3">
+		<div id="location-list" class="col-md-3 col-sm-12">
+				<h2>Schools</h2>
+				<wl data-bind="foreach: schools, foreach: search()">
+					<li><a href="#" data-bind="text: name, click: "></a></li>
+				</ul>
 		</div>
-		<div id="map" class="col=md-9">
+
+		<!-- MAP -->
+		<div class="col-md-9 col-sm-12 map-container">
+		    <div id="map" data-bind="html: map"></div>
 		</div>
+
+	<script type="text/javascript" src="lib/knockout-3.4.0.js"></script>
+	<script type="text/javascript" src="lib/jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script async type="text/javascript" 
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCcLpebmpIY3_lXS1AAH4P_vY_5zpbSAQ&libraries=places&callback=app.init" onerror="googleError()">
+</script>
 	</div>
 </body>
 
