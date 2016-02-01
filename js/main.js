@@ -1,7 +1,5 @@
-//TO DO:  	
-//			Add additional API and link
 //Model
-//Create a list of locations (schools) to display on the map
+//Creates an object for school to store all needed attributes.
 var Model =  {
 	School: function(data) {
 		var self = this;
@@ -14,21 +12,20 @@ var Model =  {
 		self.wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search='+
 			self.name + '&prop=pageimages&format=json&callback=wikiCallback';
 	}
-}
+};
 
-
- //ViewModel
-var ViewModel = function() {                         
+//ViewModel
+var ViewModel = function() {
 	var self = this,
 	 	infowindow;
 
 	self.init = function() {
-		//References Google's API documentation
+		//Create map using Google's Map API and load locations using Google Places Services
 		function initialize() {
 			var mapDetails = {
 				center: {lat: 49.25707, lng: -123.1641735},
 				zoom: 14
-			}
+			};
 			self.map = new google.maps.Map(document.getElementById('map'), mapDetails);
 
 			infowindow = new google.maps.InfoWindow();
@@ -38,7 +35,7 @@ var ViewModel = function() {
 				location: self.map.getCenter(),
 				radius: '1500',
 				keyword: ['schools']
-			}
+			};
 			service.nearbySearch(request, callback);	
 		}
 
@@ -51,16 +48,19 @@ var ViewModel = function() {
 		}
 		
 		initialize();
-	}
+	};
 
 	self.schools = ko.observableArray();
 
+	//Creates a new School for each result from Google, adds it to the schools
+	//array and creates a marker.
 	self.pushSchool = function(data) {
 		var newSchool = new Model.School(data);
 		self.schools.push(newSchool);
 		self.createMarker(newSchool,data);
 	};
 
+	//Creates marker with an event listener to run toggleBounce and sets marker on map
 	self.createMarker = function(school,place) {
 		var placeLocation = place.geometry.location,
 			marker = new google.maps.Marker({
@@ -75,29 +75,34 @@ var ViewModel = function() {
 		});
 		marker.setMap(self.map);
 		school.marker = marker;
-	}
+	};
 
+	//Attempts to pull in data from Wikipedia, if successful it passes both the 
+	//response and school to infowindowMarker, otherwise it simply passes the school.
+	//This way the user wouldn't be aware if the Wikipedia API failed.
 	function toggleBounce(school) {
 		if (school.marker.getAnimation() !== null) {
 			school.marker.setAnimation(null);
 		} else {
 			$.ajax({
 				url: school.wikiUrl,
-				dataType: "jsonp",
+				dataType: 'jsonp',
 				success: function(response) {
 					infowindowMarker(school,response);
 				},
 				error: function() {
 					infowindowMarker(school);
 				}
-			});								
+			});
 		}
 	}
 
+	//Animates the marker and creates the infowindow, only including Wikipedia
+	//results if a response is passed through.
 	function infowindowMarker(school,response) {
 			school.marker.setAnimation(google.maps.Animation.BOUNCE);
-			var content = '<div><h6>' + school.name+'</h6></div>' +
-				'<div>' + school.vicinity + '</div><br>';
+			var content = '<div><h4>' + school.name+'</h4></div>' +
+				'<div><h6>' + school.vicinity + '</h6></div>';
 
 			if (response) {
 			var articleStr = response[1],
@@ -108,20 +113,23 @@ var ViewModel = function() {
 			 url +'">Wikipedia Article' + '</a>';	
 			}
 				
-			infowindow.setContent(content)
+			infowindow.setContent(content);
 			infowindow.open(self.map, school.marker);
 
 			setTimeout(function(){
-				school.marker.setAnimation(null)
+				school.marker.setAnimation(null);
 			}, 2200);	
 	}
 
+	//Calls toggleBounce if the school name is clicked in the list
 	self.clickMarker = function(school) {
 		toggleBounce(school);
-	}
+	};
 
 	self.query = ko.observable('');
 
+	//Filters the schools list to only include matching values typed in the search
+	//bar.  Hides/shows the associated marker as applicable.
 	self.search = ko.computed(function(){
 		var searchTerm = self.query().toLowerCase();
 		if(!searchTerm) {
@@ -138,11 +146,10 @@ var ViewModel = function() {
 					school.marker.setVisible(false);
 					return false;
 				}
-			})
+			});
 		}
-	}, self)
+	}, self);
  
-}
-
+};
 
 ko.applyBindings(ViewModel());

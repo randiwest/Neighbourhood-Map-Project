@@ -15,13 +15,13 @@
 
 		<!-- Search and Location List ,  -->
 		<div id="search-bar" class="col-md-12 form-group search-bar">
-			<form role="search">
+			<form>
 					<input type="search" class="form-control" placeholder="Search here..." data-bind="textInput: query, valueUpdate: 'keyup'">
 			</form>
 		</div>
 		<div id="location-list" class="col-md-3 col-sm-12">
 				<h2>Schools</h2>
-				<wl data-bind="foreach: search()">
+				<ul data-bind="foreach: search()">
 					<li><a href="#" data-bind="text: name, click: clickMarker"></a></li>
 				</ul>
 		</div>
@@ -40,5 +40,3 @@
 </script>
 	</div>
 </body>
-
-
