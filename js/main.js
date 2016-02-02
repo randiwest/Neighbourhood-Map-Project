@@ -51,8 +51,8 @@ var ViewModel = function() {
 	};
 
 	//Error message if Google API doesn't load
-	function googleError() {
-	    alert("Oops!  The Application failed to load.  Please refresh the page.");
+	self.googleError = function() {
+		alert("Oops!  The Application failed to load.  Please refresh the page.");
 	};
 	
 	self.schools = ko.observableArray();
