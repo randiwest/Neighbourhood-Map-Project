@@ -8,7 +8,7 @@ var Model =  {
 		self.address = data.formatted_address;
 		self.rating = data.rating;
 		self.infowindow = {};
-		self.marker = {};
+		self.marker = null;
 		self.wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search='+
 			self.name + '&prop=pageimages&format=json&callback=wikiCallback';
 	}
@@ -30,7 +30,7 @@ var ViewModel = function() {
 
 			infowindow = new google.maps.InfoWindow();
 
-			var service = new google.maps.places.PlacesService(map);
+			var service = new google.maps.places.PlacesService(self.map);
 			var request = {
 				location: self.map.getCenter(),
 				radius: '1500',
@@ -50,6 +50,11 @@ var ViewModel = function() {
 		initialize();
 	};
 
+	//Error message if Google API doesn't load
+	function googleError() {
+	    alert("Oops!  The Application failed to load.  Please refresh the page.");
+	};
+	
 	self.schools = ko.observableArray();
 
 	//Creates a new School for each result from Google, adds it to the schools
@@ -92,6 +97,7 @@ var ViewModel = function() {
 				},
 				error: function() {
 					infowindowMarker(school);
+					alert("Oops!  The Wikipedia content failed to load.  Please refresh the page.");
 				}
 			});
 		}
@@ -132,22 +138,22 @@ var ViewModel = function() {
 	//bar.  Hides/shows the associated marker as applicable.
 	self.search = ko.computed(function(){
 		var searchTerm = self.query().toLowerCase();
-		if(!searchTerm) {
-			return self.schools();
-		} else {
-			return ko.utils.arrayFilter(self.schools(), function(school) {
-				var schoolLower = school.name.toLowerCase();
-				if (schoolLower.search(searchTerm) >= 0) {
-					school.visible = true;
+		return ko.utils.arrayFilter(self.schools(), function(school) {
+			var schoolLower = school.name.toLowerCase();
+			if (!searchTerm || schoolLower.search(searchTerm) >= 0) {
+				school.visible = true;
+				if(school.marker) {
 					school.marker.setVisible(true);
-					return true;
-				} else {
-					school.visible = false;
-					school.marker.setVisible(false);
-					return false;
 				}
-			});
-		}
+				return true;
+			} else {
+				school.visible = false;
+				if(school.marker) {
+					school.marker.setVisible(false);	
+				}
+				return false;
+			}
+		});
 	}, self);
  
 };
