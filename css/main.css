@@ -1,9 +1,15 @@
+html, body, main {
+    height: 100%;
+    width: 100%;
+}
+
 .map-container {
-    min-height: 800px;
+    position: relative;
+    height: 100%;
     max-width: 100%;
 }
 
-.map-container #map {
+#map {
     position: absolute;
     top: 0;
     right: 0;
@@ -14,5 +20,49 @@
 }
 
 .search-bar {
-	margin-top: 2px;
+	position: absolute;
+    width: 100%;
+    display: flex;
+    z-index: 2;
+    padding: 10px;
+}
+
+nav {
+    width: 300px;
+    top:50px;
+    position: absolute;
+    transform: translate(-300px, 0);
+    transition: transform 0.3s ease;
+    padding: 10px;
+    z-index: 2;
+    background: #fff;
+}
+
+nav.open {
+    transform: translate(0,0);
+}
+
+.glyphicon {
+    font-size: x-large;
+    padding: 4px;
+    margin-right: 10px;
+}
+
+@media screen and (min-width: 600px) {
+    nav {
+        position: relative;
+        transform: translate(0,0);
+        top: 0;
+    }
+    body {
+        display: flex;
+        flex-flow: row nowrap;
+    }
+    main {
+        width: auto;
+        flex-grow: 1;
+    }
+    .glyphicon {
+        display: none;
+    }
 }

@@ -24,7 +24,8 @@ var ViewModel = function() {
 		function initialize() {
 			var mapDetails = {
 				center: {lat: 49.25707, lng: -123.1641735},
-				zoom: 14
+				zoom: 14,
+				mapTypeControl: false
 			};
 			self.map = new google.maps.Map(document.getElementById('map'), mapDetails);
 
@@ -41,13 +42,20 @@ var ViewModel = function() {
 
 		function callback(results, status) {
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
-				for (var i = 0; i < results.length; i++) {
+				var arrayLength = results.length;
+				for (var i = 0; i < arrayLength; i++) {
 					self.pushSchool(results[i]);
 				}
 			}
 		}
 		
 		initialize();
+	};
+
+	self.navVisible = ko.observable();
+
+	self.toggleNav = function() {
+		self.navVisible(!self.navVisible());
 	};
 
 	//Error message if Google API doesn't load
@@ -67,8 +75,7 @@ var ViewModel = function() {
 
 	//Creates marker with an event listener to run toggleBounce and sets marker on map
 	self.createMarker = function(school,place) {
-		var placeLocation = place.geometry.location,
-			marker = new google.maps.Marker({
+		var marker = new google.maps.Marker({
 				map: self.map,
 				position: place.geometry.location,
 				animation: google.maps.Animation.DROP,
@@ -92,10 +99,10 @@ var ViewModel = function() {
 			$.ajax({
 				url: school.wikiUrl,
 				dataType: 'jsonp',
-				success: function(response) {
+				done: function(response) {
 					infowindowMarker(school,response);
 				},
-				error: function() {
+				fail: function() {
 					infowindowMarker(school);
 					alert("Oops!  The Wikipedia content failed to load.  Please refresh the page.");
 				}
